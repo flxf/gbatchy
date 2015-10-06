@@ -1,5 +1,6 @@
 from collections import deque, OrderedDict
 from gevent import Timeout, iwait as _gevent_iwait, wait as _gevent_wait, pool as _gevent_pool, queue as _gevent_queue, sleep
+from itertools import izip_longest
 try:
     from peak.util.proxies import LazyProxy
 except ImportError:
@@ -32,8 +33,8 @@ def pget(lst):
     return [x.get() for x in lst]
 
 @batch_context
-def pmap(fn, items, **kwargs):
-    return pget(spawn(fn, i, **kwargs) for i in items)
+def pmap(fn, *seqs, **kwargs):
+    return pget(spawn(fn, *args, **kwargs) for args in izip_longest(*seqs))
 
 @batch_context
 def pmap_unordered(fn, items, **kwargs):
@@ -433,4 +434,4 @@ class Pool(_gevent_pool.Pool):
         return list(self.imap(*args, **kwargs))
     map = pmap
 
-    
+

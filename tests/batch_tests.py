@@ -188,6 +188,10 @@ class BatchTests(TestCase):
 
     def test_utils(self):
         @batched()
+        def add(x, y):
+            return x + y
+
+        @batched()
         def add_n(args_list):
             return [args[0] + kwargs.get('n', 1)
                     for args, kwargs in args_list]
@@ -201,6 +205,8 @@ class BatchTests(TestCase):
             self.assertEquals([2,3,4], pmap(add_n, [1,2,3]))
             self.assertEquals([3,4,5], pmap(add_n, [1,2,3], n=2))
             self.assertEquals([2], pfilter(only_even, [1,2,3]))
+
+            self.assertEquals([11,13,23], pmap([7,11,10], [4,2,13]))
 
             self.assertEquals([2,3,4], sorted(pmap_unordered(add_n, [1,2,3])))
             self.assertEquals([3,4,5], sorted(pmap_unordered(add_n, [1,2,3], n=2)))
